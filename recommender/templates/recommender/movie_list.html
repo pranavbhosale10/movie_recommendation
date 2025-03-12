@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie List</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #141E30, #243B55);
+            color: #f4f4f9;
+        }
+
+        /* Header */
+        header {
+            background-color: rgba(44, 62, 80, 0.95);
+            color: #fff;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+        }
+
+        .search-bar input {
+            padding: 0.6rem;
+            border: none;
+            border-radius: 6px;
+            width: 280px;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .search-bar button {
+            padding: 0.6rem 1.2rem;
+            background-color: #e74c3c;
+            border: none;
+            color: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .search-bar button:hover {
+            background-color: #c0392b;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1300px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .movie-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            justify-content: center;
+        }
+
+        /* Movie Card */
+        .movie-card {
+            background: #1f2a38;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 18px rgba(0, 0, 0, 0.3);
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            border-bottom: 3px solid #ffcc00;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .movie-card img:hover {
+            opacity: 0.85;
+        }
+
+        .movie-card h2 {
+            margin: 0;
+            padding: 1rem;
+            font-size: 1.2rem;
+            background-color: #3498db;
+            color: #fff;
+            text-align: center;
+            text-transform: capitalize;
+        }
+
+        .movie-card a {
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+
+        /* No Movies Found */
+        .no-movies {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            color: #ffcc00;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 2rem;
+            background-color: #2c3e50;
+            color: #fff;
+            text-align: center;
+            padding: 1rem 0;
+            font-size: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .search-bar input {
+                width: 100%;
+            }
+
+            .movie-list {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Movie List</h1>
+        <form class="search-bar" method="GET" action="{% url 'movie_list' %}">
+            <input type="text" name="q" placeholder="Search for a movie..." value="{{ query|default:'' }}">
+            <button type="submit">Search</button>
+        </form>
+    </header>
+
+    <div class="container">
+        <div class="movie-list">
+            {% if movies %}
+                {% for movie in movies %}
+                    <div class="movie-card">
+                        <a href="{% url 'movie_detail' movie.id %}">
+                            <img 
+                                src="{% if movie.poster_path %}{{ movie.poster_path }}{% else %}/static/images/placeholder.png{% endif %}" 
+                                alt="{{ movie.title }} Poster"
+                                loading="lazy"
+                            >
+                            <h2>{{ movie.title }}</h2>
+                        </a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="no-movies">No movies found. Try searching for something else!</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Movie Recommendation System | Developed by You</p>
+    </footer>
+</body>
+</html>

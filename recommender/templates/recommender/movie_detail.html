@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ movie.title }} - Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #2c3e50, #4ca1af);
+            color: #fff;
+        }
+
+        /* Header */
+        header {
+            background-color: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+            text-transform: uppercase;
+            text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8);
+        }
+
+        header a {
+            color: #ffcc00;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+            font-weight: 500;
+        }
+
+        header a:hover {
+            color: #ff9900;
+            text-decoration: underline;
+        }
+
+        /* Movie Details Container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            transition: transform 0.3s;
+        }
+
+        .container:hover {
+            transform: scale(1.02);
+        }
+
+        .poster img {
+            border-radius: 10px;
+            max-width: 300px;
+            width: 100%;
+            transition: transform 0.3s;
+        }
+
+        .poster img:hover {
+            transform: scale(1.05);
+        }
+
+        .details {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .details h2 {
+            margin-top: 0;
+            font-size: 1.8rem;
+            color: #ffcc00;
+        }
+
+        .details p {
+            font-size: 1.1rem;
+            margin: 0.5rem 0;
+        }
+
+        .overview {
+            margin-top: 1.5rem;
+            line-height: 1.6;
+            color: #eee;
+            font-size: 1.1rem;
+        }
+
+        /* Recommendations Section */
+        .recommendations {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .recommendations h2 {
+            font-size: 1.6rem;
+            color: #ffcc00;
+        }
+
+        .recommendation-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+        }
+
+        .recommendation-card {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            width: 200px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .recommendation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 6px 12px rgba(255, 255, 255, 0.3);
+        }
+
+        .recommendation-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-bottom: 2px solid #ffcc00;
+        }
+
+        .recommendation-card a {
+            text-decoration: none;
+            color: #ffcc00;
+            padding: 0.5rem;
+            display: block;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .recommendation-card a:hover {
+            color: #ff9900;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 2rem;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            text-align: center;
+            padding: 1rem 0;
+            font-size: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .poster img {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>{{ movie.title }}</h1>
+        <a href="{% url 'movie_list' %}">&larr; Back to Movie List</a>
+    </header>
+
+    <div class="container">
+        <div class="poster">
+            <img src="{% if movie.poster_path %}https://image.tmdb.org/t/p/w500{{ movie.poster_path }}{% else %}/static/images/placeholder.png{% endif %}"  
+                 alt="{{ movie.title }} Poster">
+        </div>
+        
+        <div class="details">
+            <h2>Movie Details</h2>
+            <p><strong>Category:</strong> {{ movie.category|default_if_none:"Unknown" }}</p>
+            <p><strong>Release Date:</strong> {{ movie.release_date|default_if_none:"N/A" }}</p>
+            <p><strong>Rating:</strong> ⭐ {{ movie.vote_average|default_if_none:"N/A" }}/10</p>
+            <p><strong>Genres:</strong> {{ movie.genres|default_if_none:"Unknown" }}</p>
+            
+            {% if movie.cast %}
+                <h3>Cast:</h3>
+                <p>{{ movie.cast|join:", " }}</p>
+            {% endif %}
+            
+            <div class="overview">
+                <h2>Overview</h2>
+                <p>{{ movie.description|default_if_none:"No Overview Available" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container recommendations">
+        <h2>Similar Movies</h2>
+        <div class="recommendation-list">
+            {% if similar_movies %}
+                {% for rec in similar_movies %}
+                    <div class="recommendation-card">
+                        <a href="{% url 'movie_detail' rec.id %}">
+                            <img src="{% if rec.poster_path %}https://image.tmdb.org/t/p/w500{{ rec.poster_path }}{% else %}/static/images/placeholder.png{% endif %}" 
+                                 alt="{{ rec.title }} Poster">
+                            <p>{{ rec.title }}</p>
+                        </a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p style="text-align: center;">No similar movies found.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Movie Recommendation System | Developed by You</p>
+    </footer>
+</body>
+</html>
