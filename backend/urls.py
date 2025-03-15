@@ -16,14 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.urls import get_resolver
-from recommender import views
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
+
+# CSRF Token API View
+def csrf_token_view(request):
+    return JsonResponse({"csrfToken": get_token(request)})
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('movies/', include('recommender.urls')),
-    path('movies/', views.movie_list, name='movie_list'),
-    path('movies/<int:id>/', views.movie_detail, name='movie_detail'),
+    path('movies/', include('recommender.urls')),  # Includes all recommender-related URLs
+    path("auth/", include("authentication.urls")),  # Authentication URLs
+    path("csrf/", csrf_token_view, name="csrf_token"),  # CSRF Token Endpoint
 ]
-
-print("Registered URL patterns:", get_resolver().reverse_dict)

@@ -14,11 +14,8 @@ from pathlib import Path
 from decouple import config
 from celery.schedules import crontab
 
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -29,8 +26,8 @@ SECRET_KEY = 'django-insecure-1xw7net^q7spo2n5sapczro+gmqo)fnpkth-pqlf2z%8kj*rz0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+# Allowed Hosts
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 # Application definition
 
@@ -44,9 +41,12 @@ INSTALLED_APPS = [
     'recommender',
     'django_celery_beat',
     'recommender.utils',
+    'corsheaders',
+    'authentication',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # ✅ Move this to the top
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -75,7 +75,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'backend.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -107,7 +106,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -118,7 +116,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -141,3 +138,47 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 broker_connection_retry_on_startup = True
+
+# ✅ CORS SETTINGS (Fixes the CSRF issue)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+
+CORS_ALLOW_CREDENTIALS = True  # Allow frontend to send credentials (cookies)
+
+# ✅ Add CSRF Trusted Origins
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+]
+
+# ✅ Allow Cross-Origin Requests for All Methods (Optional)
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+]
+
+# ✅ Allow Headers (Optional)
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
+# ✅ CSRF Cookie Settings
+CSRF_COOKIE_NAME = "csrftoken"
+CSRF_COOKIE_HTTPONLY = False  # Ensure the frontend can access it
+CSRF_COOKIE_SAMESITE = "Lax"  # Important for cross-site requests
+CSRF_USE_SESSIONS = False  # Ensure CSRF is cookie-based
+SESSION_COOKIE_SAMESITE = "Lax"  # Avoid session issues
+SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript from accessing session cookies
+
